@@ -44,7 +44,7 @@ class Recorder(task.Task):
 
     """
     def __init__(self, file_name, device, debug=False):
-        super(self.__class__, self).__init__([
+        super(Recorder, self).__init__([
             '/usr/bin/arecord',
             '-f', 'S16_LE',
             '-r', '48000',
@@ -65,7 +65,7 @@ class Player(task.Task):
 
     """
     def __init__(self, file_name, debug=False):
-        super(self.__class__, self).__init__(['/usr/bin/mplayer', '-loop', '0', file_name], debug)
+        super(Player, self).__init__(['/usr/bin/mplayer', '-loop', '0', file_name], debug)
 
 class MicLooper(statemachine.StateMachine):
     """
@@ -128,62 +128,59 @@ class MicLooper(statemachine.StateMachine):
         self._state_ready_to_rec.add_rule(statemachine.Rule(
             self._event_start,
             None,
-            self.__trace,
+            self.notif,
             self._state_ready_to_rec))
         
         self._state_ready_to_rec.add_rule(statemachine.Rule(
             self._event_key,
             self.__start_record,
-            self.__trace,
+            self.notif,
             self._state_rec))
 
         self._state_ready_to_rec.add_rule(statemachine.Rule(
             self._event_quit,
             self.__quit,
-            self.__trace,
+            self.notif,
             self._state_quit))
 
         self._state_rec.add_rule(statemachine.Rule(
             self._event_key,
             self.__stop_record,
-            self.__trace,
+            self.notif,
             self._state_ready_to_play))
 
         self._state_rec.add_rule(statemachine.Rule(
             self._event_quit,
             self.__quit,
-            self.__trace,
+            self.notif,
             self._state_quit))
 
         self._state_ready_to_play.add_rule(statemachine.Rule(
             self._event_key,
             self.__play,
-            self.__trace,
+            self.notif,
             self._state_play))
 
         self._state_ready_to_play.add_rule(statemachine.Rule(
             self._event_quit,
             self.__quit,
-            self.__trace,
+            self.notif,
             self._state_quit))
 
         self._state_play.add_rule(statemachine.Rule(
             self._event_key,
             self.__stop,
-            self.__trace,
+            self.notif,
             self._state_ready_to_play))
 
         self._state_play.add_rule(statemachine.Rule(
             self._event_quit,
             self.__quit,
-            self.__trace,
+            self.notif,
             self._state_quit))
 
-        super(self.__class__, self).__init__(self._state_ready_to_rec)
+        super(MicLooper, self).__init__(self._state_ready_to_rec)
         self.on_event(self._event_start)
-
-    def __trace(self, state_str):
-        print self._tag + " " + state_str
 
     def __start_record(self):
         self._recorder.start()
@@ -201,6 +198,18 @@ class MicLooper(statemachine.StateMachine):
         self._recorder.stop()
         self._player.stop()
 
+    def notif(self, state_str):
+        """
+        Notif a state change.
+        By default print the new state.
+        This method is public to allow a child class to override it.
+
+        :Args:
+            state_str : string
+                Name of the new state
+        """
+        print self._tag + " " + state_str
+        
     def on_event_key_pressed(self):
         """ event key pressed callback
         """

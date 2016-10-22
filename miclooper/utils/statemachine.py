@@ -90,16 +90,16 @@ class Rule(object):
             Event that trigger the rule
         action : function
             Action executed when the rule is triggered
-        trace : function
+        notif : function
             Print function that take in parameter a State name
         next_state : State
             State after transition
 
     """
-    def __init__(self, event, action, trace, next_state):
+    def __init__(self, event, action, notif, next_state):
         self._event = event
         self._action = action
-        self._trace = trace
+        self._notif = notif
         self._next_state = next_state
 
     def __str__(self):
@@ -117,8 +117,8 @@ class Rule(object):
         if self._action != None:
             self._action()
 
-        if self._trace != None:
-            self._trace(str(self._next_state))
+        if self._notif != None:
+            self._notif(str(self._next_state))
 
         return self._next_state
 
