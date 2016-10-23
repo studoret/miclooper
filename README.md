@@ -67,7 +67,7 @@ MicLooper state machine.
 
 - ***milo.py***
 
-Sample application using miclooper.py
+Sample application using miclooper.py with ncurses interface.
 For example: the follwowing command will use 4 instances of MicLooper state machines with '1' is the command key for the 1st one, '2' for the 2nd and so on.
 The records will be stored in ./Records/rec_time/rec_1.raw, ./Records/rec_time/rec_2.raw ...
 
